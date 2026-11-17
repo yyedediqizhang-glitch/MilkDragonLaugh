@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../util/journal_repository.dart';
 import '../../util/local_storage.dart';
@@ -6,16 +7,25 @@ import '../../util/locale_controller.dart';
 
 /// Controller of the settings page.
 ///
-/// Owns the language choice and the "storage used" number shown to the user.
+/// Owns the language choice, the "storage used" number and the app version read
+/// from the platform (Session 4).
 class SettingPageController extends ChangeNotifier {
-  static const String appVersion = '1.0.0';
-
   bool _isLoading = true;
   int _bytes = 0;
+  String _version = '1.1.0';
+  String _buildNumber = '2';
 
   bool get isLoading => _isLoading;
 
   int get bytes => _bytes;
+
+  String get version => _version;
+
+  String get buildNumber => _buildNumber;
+
+  /// `1.1.0 (2)` – the version plus the build number from pubspec.yaml.
+  String get versionLabel =>
+      _buildNumber.isEmpty ? _version : '$_version ($_buildNumber)';
 
   Locale get locale => LocaleController.instance.locale;
 
@@ -35,6 +45,15 @@ class SettingPageController extends ChangeNotifier {
 
   Future<void> load() async {
     _bytes = await LocalStorage.instance.storageSizeBytes();
+
+    try {
+      final PackageInfo info = await PackageInfo.fromPlatform();
+      _version = info.version;
+      _buildNumber = info.buildNumber;
+    } catch (_) {
+      // Platform channel unavailable (e.g. widget tests) – keep the fallback.
+    }
+
     _isLoading = false;
     notifyListeners();
   }

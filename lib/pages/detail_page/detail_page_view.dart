@@ -4,15 +4,26 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/journal_entry.dart';
+import '../../util/app_theme.dart';
 import '../../util/date_formatter.dart';
+import '../../util/duo_layout_service.dart';
 import '../add_page/add_page_view.dart';
 import 'detail_page_controller.dart';
 
 /// Detail page: shows one journal entry, and offers edit / delete.
+///
+/// On an iPhone Duo the Back action moves to the native side rail and the
+/// Flutter AppBar arrow is hidden. When [embedded] is true the page is shown
+/// inside the home page's right pane instead of as its own route.
 class DetailPageView extends StatefulWidget {
-  const DetailPageView({super.key, required this.entryId});
+  const DetailPageView({
+    super.key,
+    required this.entryId,
+    this.embedded = false,
+  });
 
   final String entryId;
+  final bool embedded;
 
   @override
   State<DetailPageView> createState() => _DetailPageViewState();
@@ -23,8 +34,36 @@ class _DetailPageViewState extends State<DetailPageView> {
     entryId: widget.entryId,
   );
 
+  bool _railVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.embedded) {
+      _useNativeRailBack();
+    }
+  }
+
+  Future<void> _useNativeRailBack() async {
+    DuoLayoutService.instance.setBackHandler(() {
+      if (!mounted) {
+        return;
+      }
+      Navigator.of(context).maybePop();
+    });
+
+    final bool shown = await DuoLayoutService.instance.enableRailBack();
+    if (mounted && shown != _railVisible) {
+      setState(() => _railVisible = shown);
+    }
+  }
+
   @override
   void dispose() {
+    if (!widget.embedded) {
+      DuoLayoutService.instance.setBackHandler(null);
+      DuoLayoutService.instance.disableRailBack();
+    }
     _controller.dispose();
     super.dispose();
   }
@@ -37,6 +76,7 @@ class _DetailPageViewState extends State<DetailPageView> {
 
   Future<void> _confirmDelete(JournalEntry entry) async {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final AppPalette palette = context.palette;
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -49,6 +89,7 @@ class _DetailPageViewState extends State<DetailPageView> {
               child: Text(l10n.cancel),
             ),
             FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: palette.danger),
               onPressed: () => Navigator.of(dialogContext).pop(true),
               child: Text(l10n.delete),
             ),
@@ -62,17 +103,21 @@ class _DetailPageViewState extends State<DetailPageView> {
     }
 
     _controller.remove();
-    Navigator.of(context).pop();
+    if (!widget.embedded) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
     final String localeName = Localizations.localeOf(context).toString();
+    final AppPalette palette = context.palette;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.entryLabel),
+        automaticallyImplyLeading: !_railVisible,
         actions: <Widget>[
           ListenableBuilder(
             listenable: _controller,
@@ -106,7 +151,9 @@ class _DetailPageViewState extends State<DetailPageView> {
           final JournalEntry? entry = _controller.entry;
 
           if (entry == null) {
-            return Center(child: Text(l10n.emptyTitle));
+            return Center(
+              child: Text(l10n.emptyTitle, style: TextStyle(color: palette.muted)),
+            );
           }
 
           return ListView(
@@ -114,22 +161,22 @@ class _DetailPageViewState extends State<DetailPageView> {
             children: <Widget>[
               Text(
                 entry.title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 26,
                   fontWeight: FontWeight.w800,
                   height: 1.25,
-                  color: Color(0xFF14223B),
+                  color: palette.ink,
                 ),
               ),
               const SizedBox(height: 10),
               Text(
                 l10n.createdOn(formatDateTime(entry.createdAt, localeName)),
-                style: const TextStyle(fontSize: 12, color: Color(0xFF7A88A3)),
+                style: TextStyle(fontSize: 12, color: palette.muted),
               ),
               const SizedBox(height: 4),
               Text(
                 l10n.updatedOn(formatDateTime(entry.updatedAt, localeName)),
-                style: const TextStyle(fontSize: 12, color: Color(0xFF7A88A3)),
+                style: TextStyle(fontSize: 12, color: palette.muted),
               ),
               if (entry.hasImage) ...<Widget>[
                 const SizedBox(height: 18),
@@ -147,16 +194,16 @@ class _DetailPageViewState extends State<DetailPageView> {
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: palette.card,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: const Color(0xFFE3E9F4)),
+                  border: Border.all(color: palette.border),
                 ),
                 child: Text(
                   entry.notes.isEmpty ? l10n.noNotes : entry.notes,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     height: 1.6,
-                    color: Color(0xFF14223B),
+                    color: palette.ink,
                   ),
                 ),
               ),

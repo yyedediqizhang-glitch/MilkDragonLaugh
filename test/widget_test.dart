@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:edu_snap/main.dart';
@@ -16,6 +17,14 @@ void main() {
   setUp(() async {
     // Fresh storage for every test, then the demo entries are written back.
     SharedPreferences.setMockInitialValues(<String, Object>{});
+    PackageInfo.setMockInitialValues(
+      appName: 'EDU SNAP',
+      packageName: 'edu_snap',
+      version: '1.1.0',
+      buildNumber: '2',
+      buildSignature: '',
+      installerStore: null,
+    );
     await JournalRepository.instance.reset();
     await LocaleController.instance.setLocale(const Locale('en'));
   });
@@ -111,6 +120,7 @@ void main() {
 
     expect(find.text('Storage used'), findsOneWidget);
     expect(find.text('Clear all data'), findsOneWidget);
+    expect(find.text('Version 1.1.0 (2)'), findsOneWidget);
 
     await tester.tap(find.text('Clear all data'));
     await tester.pumpAndSettle();

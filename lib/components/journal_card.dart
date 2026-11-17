@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:material_ui/material_ui.dart';
 
+import '../../util/app_theme.dart';
 import '../../util/date_formatter.dart';
 
 /// One row in the home page list. Reused for every journal entry.
@@ -14,6 +15,7 @@ class JournalCard extends StatelessWidget {
     required this.localeName,
     required this.onTap,
     this.imageBase64,
+    this.selected = false,
   });
 
   final String title;
@@ -22,15 +24,22 @@ class JournalCard extends StatelessWidget {
   final String localeName;
   final VoidCallback onTap;
   final String? imageBase64;
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
+    final AppPalette palette = context.palette;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: selected
+            ? palette.surface.withValues(alpha: 0.35)
+            : palette.card,
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0xFFE3E9F4)),
+        border: Border.all(
+          color: selected ? palette.secondary : palette.border,
+        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -66,16 +75,16 @@ class JournalCard extends StatelessWidget {
                               title,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
-                                color: Color(0xFF14223B),
+                                color: palette.ink,
                               ),
                             ),
                           ),
-                          const Icon(
+                          Icon(
                             Icons.chevron_right_rounded,
-                            color: Color(0xFF9AA7BF),
+                            color: palette.muted,
                           ),
                         ],
                       ),
@@ -84,18 +93,18 @@ class JournalCard extends StatelessWidget {
                         notes,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           height: 1.4,
-                          color: Color(0xFF7A88A3),
+                          color: palette.muted,
                         ),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         formatDateTime(date, localeName),
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: Color(0xFFA9B4C8),
+                          color: palette.muted.withValues(alpha: 0.8),
                         ),
                       ),
                     ],

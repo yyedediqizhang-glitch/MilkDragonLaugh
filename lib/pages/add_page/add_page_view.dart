@@ -5,6 +5,7 @@ import 'package:material_ui/material_ui.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../models/journal_entry.dart';
+import '../../util/app_theme.dart';
 import '../../util/photo_service.dart';
 import 'add_page_controller.dart';
 
@@ -167,7 +168,7 @@ class _AddPageViewState extends State<AddPageView> {
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: Material(
-                  color: Colors.black54,
+                  color: context.palette.ink.withValues(alpha: 0.6),
                   shape: const CircleBorder(),
                   child: IconButton(
                     tooltip: l10n.removePhoto,
@@ -256,11 +257,11 @@ class _AddPageViewState extends State<AddPageView> {
           const SizedBox(height: 20),
           Text(
             l10n.photoSection,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               letterSpacing: 1.2,
               fontWeight: FontWeight.w700,
-              color: Color(0xFF9AA7BF),
+              color: context.palette.muted,
             ),
           ),
           const SizedBox(height: 10),

@@ -2,7 +2,7 @@ name: edu_snap
 description: "EDU SNAP - a Flutter workshop demo app built with an MVC structure."
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.1.0+2
 
 environment:
   sdk: ^3.14.0
@@ -22,13 +22,37 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
+  # Session 4: version + build number shown on the settings page.
+  package_info_plus: ^8.3.1
+
+  # Session 4: native iPhone Duo side rail and fold stream (iOS only, safe to
+  # call on every other platform).
+  itchi_flutter_duo_layout:
+    git:
+      url: https://github.com/itchitechhk/itchi_flutter_duo_layout.git
+      ref: main
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
 
   # Generates lib/l10n/app_localizations.dart from the .arb files.
   generate: true
+
+  assets:
+    - assets/icon.png
+    - assets/icon_foreground.png
+
+# Session 4: one 1024x1024 source image -> every iOS / Android icon size.
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/icon.png
+  remove_alpha_ios: true
+  adaptive_icon_background: "#005828"
+  adaptive_icon_foreground: assets/icon_foreground.png

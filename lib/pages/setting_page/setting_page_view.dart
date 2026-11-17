@@ -1,10 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../util/app_theme.dart';
 import '../../util/locale_controller.dart';
 import 'setting_page_controller.dart';
 
-/// Settings page: language, storage used and the destructive clear action.
+/// Settings page: language, storage used, app version and the clear action.
 class SettingPageView extends StatefulWidget {
   const SettingPageView({super.key});
 
@@ -44,6 +45,7 @@ class _SettingPageViewState extends State<SettingPageView> {
     required String confirmLabel,
   }) async {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final AppPalette palette = context.palette;
     final bool? answer = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) {
@@ -56,6 +58,7 @@ class _SettingPageViewState extends State<SettingPageView> {
               child: Text(l10n.cancel),
             ),
             FilledButton(
+              style: FilledButton.styleFrom(backgroundColor: palette.danger),
               onPressed: () => Navigator.of(dialogContext).pop(true),
               child: Text(confirmLabel),
             ),
@@ -102,6 +105,7 @@ class _SettingPageViewState extends State<SettingPageView> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations l10n = AppLocalizations.of(context);
+    final AppPalette palette = context.palette;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
@@ -112,19 +116,13 @@ class _SettingPageViewState extends State<SettingPageView> {
             padding: const EdgeInsets.fromLTRB(20, 8, 20, 32),
             children: <Widget>[
               _SectionTitle(label: l10n.languageSection),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE3E9F4)),
-                ),
+              _Tile(
                 child: Row(
                   children: <Widget>[
-                    const Icon(
+                    Icon(
                       Icons.translate_rounded,
                       size: 20,
-                      color: Color(0xFF2F6FED),
+                      color: palette.primary,
                     ),
                     const SizedBox(width: 12),
                     Expanded(child: Text(l10n.language)),
@@ -151,20 +149,10 @@ class _SettingPageViewState extends State<SettingPageView> {
               ),
               const SizedBox(height: 22),
               _SectionTitle(label: l10n.dataSection),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE3E9F4)),
-                ),
+              _Tile(
                 child: Row(
                   children: <Widget>[
-                    const Icon(
-                      Icons.storage_rounded,
-                      size: 20,
-                      color: Color(0xFF2F6FED),
-                    ),
+                    Icon(Icons.storage_rounded, size: 20, color: palette.primary),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
@@ -172,9 +160,9 @@ class _SettingPageViewState extends State<SettingPageView> {
                         children: <Widget>[
                           Text(
                             l10n.storageTitle,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w600,
-                              color: Color(0xFF14223B),
+                              color: palette.ink,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -182,9 +170,9 @@ class _SettingPageViewState extends State<SettingPageView> {
                             _controller.isLoading
                                 ? '...'
                                 : l10n.storageUsed(_controller.formattedSize),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
-                              color: Color(0xFF7A88A3),
+                              color: palette.muted,
                             ),
                           ),
                         ],
@@ -199,8 +187,10 @@ class _SettingPageViewState extends State<SettingPageView> {
                 icon: const Icon(Icons.delete_forever_outlined),
                 label: Text(l10n.clearData),
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFFE5484D),
-                  side: const BorderSide(color: Color(0xFFF3C1C3)),
+                  foregroundColor: palette.danger,
+                  side: BorderSide(
+                    color: palette.danger.withValues(alpha: 0.35),
+                  ),
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -209,38 +199,29 @@ class _SettingPageViewState extends State<SettingPageView> {
               ),
               const SizedBox(height: 26),
               _SectionTitle(label: l10n.aboutSection),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE3E9F4)),
-                ),
+              _Tile(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
                       l10n.appTitle,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w700,
-                        color: Color(0xFF14223B),
+                        color: palette.ink,
                       ),
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      l10n.version(SettingPageController.appVersion),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Color(0xFF7A88A3),
-                      ),
+                      l10n.version(_controller.versionLabel),
+                      style: TextStyle(fontSize: 12, color: palette.muted),
                     ),
                     const SizedBox(height: 10),
                     Text(
                       l10n.aboutBody,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 12,
                         height: 1.5,
-                        color: Color(0xFF7A88A3),
+                        color: palette.muted,
                       ),
                     ),
                   ],
@@ -250,6 +231,25 @@ class _SettingPageViewState extends State<SettingPageView> {
           );
         },
       ),
+    );
+  }
+}
+
+class _Tile extends StatelessWidget {
+  const _Tile({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: context.palette.card,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: context.palette.border),
+      ),
+      child: child,
     );
   }
 }
@@ -265,11 +265,11 @@ class _SectionTitle extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 10),
       child: Text(
         label,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 11,
           letterSpacing: 1.2,
           fontWeight: FontWeight.w700,
-          color: Color(0xFF9AA7BF),
+          color: context.palette.muted,
         ),
       ),
     );
