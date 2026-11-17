@@ -4,6 +4,12 @@ A Flutter demo app built during the **Mobile App Development with Flutter**
 workshop (EDUHK, Itchi Technology Limited), structured with the MVC layout
 taught in Session 1.
 
+## Screens
+
+| Landing page | Home page |
+|---|---|
+| ![Landing page](docs/screenshots/landing.png) | ![Home page](docs/screenshots/home.png) |
+
 ## Folder structure
 
 ```
