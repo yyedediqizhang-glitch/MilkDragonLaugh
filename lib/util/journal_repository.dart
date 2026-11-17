@@ -1,20 +1,38 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../models/journal_entry.dart';
+import 'local_storage.dart';
 
-/// In-memory data source shared by every page.
+/// In-memory journal shared by every page, mirrored into local storage.
 ///
-/// Controllers talk to this repository instead of owning duplicate lists, so a
-/// new entry added on the add page shows up on the home page and on the detail
-/// page without any manual wiring.
+/// Controllers talk to this repository instead of owning duplicate lists, so an
+/// entry created on the add page shows up on the home page, the detail page and
+/// survives an app restart (Session 3).
 class JournalRepository extends ChangeNotifier {
   JournalRepository._();
 
   static final JournalRepository instance = JournalRepository._();
 
-  final List<JournalEntry> _entries = _seedEntries();
+  final List<JournalEntry> _entries = <JournalEntry>[];
 
   List<JournalEntry> get entries => List<JournalEntry>.unmodifiable(_entries);
+
+  /// Loads the journal from local storage.
+  ///
+  /// A fresh install starts with an empty journal, as requested in Session 3:
+  /// the home page then shows the "journal is empty" hint.
+  Future<void> load() async {
+    final List<JournalEntry>? stored = await LocalStorage.instance
+        .loadEntries();
+
+    _entries
+      ..clear()
+      ..addAll(stored ?? const <JournalEntry>[]);
+
+    sortByTitleDescending();
+  }
 
   static List<JournalEntry> _seedEntries() {
     final DateTime now = DateTime.now();
@@ -24,26 +42,17 @@ class JournalRepository extends ChangeNotifier {
         id: 'seed-1',
         title: 'Welcome to EDU SNAP',
         notes:
-            'This is a demo journal entry. Tap it to open the detail page, or '
-            'swipe it to the left to delete it.',
+            'This is a demo entry. Tap it to open the detail page, swipe it to '
+            'delete it, or use the pencil to edit it.',
         createdAt: now,
         updatedAt: now,
       ),
       JournalEntry(
         id: 'seed-2',
-        title: 'Session 1 recap',
+        title: 'Session 3 notes',
         notes:
-            'Set up Flutter, created the EDU SNAP project and organised the '
-            'MVC folders: models, components, pages and util.',
-        createdAt: now,
-        updatedAt: now,
-      ),
-      JournalEntry(
-        id: 'seed-3',
-        title: 'Ideas for the journal app',
-        notes:
-            'Add an edit button, a settings page, and later on local storage '
-            'so the entries survive an app restart.',
+            'Camera and gallery permissions, local storage with '
+            'shared_preferences, and multi-language support.',
         createdAt: now,
         updatedAt: now,
       ),
@@ -71,7 +80,11 @@ class JournalRepository extends ChangeNotifier {
     notifyListeners();
   }
 
-  void add({required String title, required String notes}) {
+  void add({
+    required String title,
+    required String notes,
+    String? imageBase64,
+  }) {
     final DateTime now = DateTime.now();
 
     _entries.add(
@@ -81,14 +94,24 @@ class JournalRepository extends ChangeNotifier {
         notes: notes.trim(),
         createdAt: now,
         updatedAt: now,
+        imageBase64: imageBase64,
       ),
     );
 
     sortByTitleDescending();
+    unawaited(_persist());
   }
 
-  void update(String id, {required String title, required String notes}) {
-    final int index = _entries.indexWhere((JournalEntry entry) => entry.id == id);
+  void update(
+    String id, {
+    required String title,
+    required String notes,
+    String? imageBase64,
+    bool removeImage = false,
+  }) {
+    final int index = _entries.indexWhere(
+      (JournalEntry entry) => entry.id == id,
+    );
     if (index == -1) {
       return;
     }
@@ -97,22 +120,36 @@ class JournalRepository extends ChangeNotifier {
       title: title.trim(),
       notes: notes.trim(),
       updatedAt: DateTime.now(),
+      imageBase64: imageBase64,
+      removeImage: removeImage,
     );
 
     sortByTitleDescending();
+    unawaited(_persist());
   }
 
   void remove(String id) {
     _entries.removeWhere((JournalEntry entry) => entry.id == id);
     notifyListeners();
+    unawaited(_persist());
   }
+
+  /// Deletes every entry, photo and preference stored by the app.
+  Future<void> clearAll() async {
+    _entries.clear();
+    await LocalStorage.instance.clearAll();
+    notifyListeners();
+  }
+
+  Future<void> _persist() => LocalStorage.instance.saveEntries(_entries);
 
   /// Restores the demo data so widget tests start from a known state.
   @visibleForTesting
-  void reset() {
+  Future<void> reset() async {
     _entries
       ..clear()
       ..addAll(_seedEntries());
     sortByTitleDescending();
+    await _persist();
   }
 }

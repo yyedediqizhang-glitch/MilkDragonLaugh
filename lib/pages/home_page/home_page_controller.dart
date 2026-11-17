@@ -18,13 +18,10 @@ class HomePageController extends ChangeNotifier {
 
   List<JournalEntry> get entries => _repository.entries;
 
-  /// Called from `initState`: load the data once, then sort it by title.
-  ///
-  /// This is the lifecycle step explained in Session 2 – `initState` runs once
-  /// when the page is created, so the loading and the initial sorting live here.
+  /// Called from `initState`: load the stored journal once, then sort it by
+  /// title (Session 2 lifecycle + Session 3 local storage).
   Future<void> init() async {
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    _repository.sortByTitleDescending();
+    await _repository.load();
     _isLoading = false;
     notifyListeners();
   }

@@ -7,7 +7,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Milk Dragon Laugh</string>
+	<string>EDU SNAP</string>
+	<key>NSCameraUsageDescription</key>
+	<string>EDU SNAP uses the camera so you can add a photo to a journal entry.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>EDU SNAP uses your photo library so you can attach a picture to a journal entry.</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

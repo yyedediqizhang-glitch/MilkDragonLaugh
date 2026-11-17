@@ -1,0 +1,83 @@
+{
+  "@@locale": "ja",
+  "appTitle": "EDU SNAP",
+  "journalTitle": "ジャーナル",
+  "newEntry": "新規作成",
+  "emptyTitle": "ジャーナルは空です",
+  "emptyHint": "「新規作成」を押して最初の日記を書きましょう。",
+  "save": "保存",
+  "cancel": "キャンセル",
+  "delete": "削除",
+  "edit": "編集",
+  "titleLabel": "タイトル",
+  "titleHint": "例：今日学んだこと",
+  "titleRequired": "タイトルは必須です",
+  "titleEmptyMessage": "保存する前にタイトルを入力してください。",
+  "notesLabel": "メモ",
+  "notesHint": "覚えておきたいことを書きましょう…",
+  "addEntry": "追加",
+  "saveChanges": "変更を保存",
+  "editEntry": "日記を編集",
+  "entryLabel": "日記",
+  "deleteEntryTitle": "この日記を削除しますか？",
+  "deleteEntryBody": "「{title}」はジャーナルから削除されます。",
+  "@deleteEntryBody": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "createdOn": "作成日 {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "updatedOn": "更新日 {date}",
+  "@updatedOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "noNotes": "メモはまだありません。",
+  "editThisEntry": "この日記を編集",
+  "addPhoto": "写真を追加",
+  "takePhoto": "写真を撮る",
+  "chooseFromGallery": "ギャラリーから選ぶ",
+  "removePhoto": "写真を削除",
+  "permissionTitle": "権限が必要です",
+  "permissionCameraBody": "写真を撮るにはカメラへのアクセスが必要です。システム設定で許可してください。",
+  "permissionGalleryBody": "写真を選ぶにはフォトライブラリへのアクセスが必要です。システム設定で許可してください。",
+  "openSettings": "設定を開く",
+  "pickFailed": "画像を選択できませんでした。もう一度お試しください。",
+  "language": "言語",
+  "languageEnglish": "英語",
+  "languageChinese": "中国語",
+  "languageJapanese": "日本語",
+  "storageTitle": "使用ストレージ",
+  "storageUsed": "{size} 使用中",
+  "@storageUsed": {
+    "placeholders": {
+      "size": { "type": "String" }
+    }
+  },
+  "clearData": "すべてのデータを削除",
+  "clearDataTitle": "すべてのデータを削除しますか？",
+  "clearDataBody": "このアプリに保存されたすべての日記と写真が削除されます。",
+  "clearAction": "削除",
+  "confirmClearTitle": "本当に削除しますか？",
+  "confirmClearBody": "この操作は取り消せません。",
+  "dataCleared": "すべてのデータを削除しました。",
+  "about": "このアプリについて",
+  "aboutBody": "Flutter とワークショップの MVC 構成で作られたジャーナルアプリです。",
+  "version": "バージョン {version}",
+  "@version": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "settingsTitle": "設定",
+  "dataSection": "データ",
+  "languageSection": "言語",
+  "aboutSection": "このアプリについて",
+  "photoSection": "写真"
+}

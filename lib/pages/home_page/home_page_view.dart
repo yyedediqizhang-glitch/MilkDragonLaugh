@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
 import '../../components/journal_card.dart';
+import '../../l10n/app_localizations.dart';
 import '../../models/journal_entry.dart';
 import '../add_page/add_page_view.dart';
 import '../detail_page/detail_page_view.dart';
@@ -49,20 +50,21 @@ class _HomePageViewState extends State<HomePageView> {
   }
 
   Future<bool> _confirmDelete(JournalEntry entry) async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Delete entry?'),
-          content: Text('"${entry.title}" will be removed from your journal.'),
+          title: Text(l10n.deleteEntryTitle),
+          content: Text(l10n.deleteEntryBody(entry.title)),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Delete'),
+              child: Text(l10n.delete),
             ),
           ],
         );
@@ -74,12 +76,15 @@ class _HomePageViewState extends State<HomePageView> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final String localeName = Localizations.localeOf(context).toString();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('EDU SNAP'),
+        title: Text(l10n.appTitle),
         actions: <Widget>[
           IconButton(
-            tooltip: 'Settings',
+            tooltip: l10n.settingsTitle,
             onPressed: _openSettings,
             icon: const Icon(Icons.settings_outlined),
           ),
@@ -88,7 +93,7 @@ class _HomePageViewState extends State<HomePageView> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openAdd,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('New entry'),
+        label: Text(l10n.newEntry),
       ),
       body: ListenableBuilder(
         listenable: _controller,
@@ -112,25 +117,26 @@ class _HomePageViewState extends State<HomePageView> {
                       color: Color(0xFF9AA7BF),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Your journal is empty',
-                      style: TextStyle(
+                    Text(
+                      l10n.emptyTitle,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
                         color: Color(0xFF14223B),
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Tap "New entry" to write your first one.',
+                    Text(
+                      l10n.emptyHint,
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Color(0xFF7A88A3)),
+                      style: const TextStyle(color: Color(0xFF7A88A3)),
                     ),
                     const SizedBox(height: 20),
                     FilledButton.icon(
                       onPressed: _openAdd,
                       icon: const Icon(Icons.add_rounded),
-                      label: const Text('New entry'),
+                      label: Text(l10n.newEntry),
                     ),
                   ],
                 ),
@@ -166,6 +172,8 @@ class _HomePageViewState extends State<HomePageView> {
                   title: entry.title,
                   notes: entry.notes,
                   date: entry.updatedAt,
+                  localeName: localeName,
+                  imageBase64: entry.imageBase64,
                   onTap: () => _openDetail(entry.id),
                 ),
               );

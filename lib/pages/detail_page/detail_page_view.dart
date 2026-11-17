@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:material_ui/material_ui.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../models/journal_entry.dart';
 import '../../util/date_formatter.dart';
 import '../add_page/add_page_view.dart';
@@ -33,20 +36,21 @@ class _DetailPageViewState extends State<DetailPageView> {
   }
 
   Future<void> _confirmDelete(JournalEntry entry) async {
+    final AppLocalizations l10n = AppLocalizations.of(context);
     final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Delete entry?'),
-          content: Text('"${entry.title}" will be removed from your journal.'),
+          title: Text(l10n.deleteEntryTitle),
+          content: Text(l10n.deleteEntryBody(entry.title)),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancel'),
+              child: Text(l10n.cancel),
             ),
             FilledButton(
               onPressed: () => Navigator.of(dialogContext).pop(true),
-              child: const Text('Delete'),
+              child: Text(l10n.delete),
             ),
           ],
         );
@@ -63,9 +67,12 @@ class _DetailPageViewState extends State<DetailPageView> {
 
   @override
   Widget build(BuildContext context) {
+    final AppLocalizations l10n = AppLocalizations.of(context);
+    final String localeName = Localizations.localeOf(context).toString();
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Entry'),
+        title: Text(l10n.entryLabel),
         actions: <Widget>[
           ListenableBuilder(
             listenable: _controller,
@@ -78,12 +85,12 @@ class _DetailPageViewState extends State<DetailPageView> {
               return Row(
                 children: <Widget>[
                   IconButton(
-                    tooltip: 'Edit',
+                    tooltip: l10n.edit,
                     onPressed: () => _openEdit(entry),
                     icon: const Icon(Icons.edit_outlined),
                   ),
                   IconButton(
-                    tooltip: 'Delete',
+                    tooltip: l10n.delete,
                     onPressed: () => _confirmDelete(entry),
                     icon: const Icon(Icons.delete_outline),
                   ),
@@ -99,7 +106,7 @@ class _DetailPageViewState extends State<DetailPageView> {
           final JournalEntry? entry = _controller.entry;
 
           if (entry == null) {
-            return const Center(child: Text('This entry was deleted.'));
+            return Center(child: Text(l10n.emptyTitle));
           }
 
           return ListView(
@@ -116,15 +123,27 @@ class _DetailPageViewState extends State<DetailPageView> {
               ),
               const SizedBox(height: 10),
               Text(
-                'Created ${formatDateTime(entry.createdAt)}',
+                l10n.createdOn(formatDateTime(entry.createdAt, localeName)),
                 style: const TextStyle(fontSize: 12, color: Color(0xFF7A88A3)),
               ),
               const SizedBox(height: 4),
               Text(
-                'Updated ${formatDateTime(entry.updatedAt)}',
+                l10n.updatedOn(formatDateTime(entry.updatedAt, localeName)),
                 style: const TextStyle(fontSize: 12, color: Color(0xFF7A88A3)),
               ),
-              const SizedBox(height: 22),
+              if (entry.hasImage) ...<Widget>[
+                const SizedBox(height: 18),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(18),
+                  child: Image.memory(
+                    base64Decode(entry.imageBase64!),
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    gaplessPlayback: true,
+                  ),
+                ),
+              ],
+              const SizedBox(height: 18),
               Container(
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
@@ -133,7 +152,7 @@ class _DetailPageViewState extends State<DetailPageView> {
                   border: Border.all(color: const Color(0xFFE3E9F4)),
                 ),
                 child: Text(
-                  entry.notes.isEmpty ? 'No notes yet.' : entry.notes,
+                  entry.notes.isEmpty ? l10n.noNotes : entry.notes,
                   style: const TextStyle(
                     fontSize: 15,
                     height: 1.6,
@@ -145,7 +164,7 @@ class _DetailPageViewState extends State<DetailPageView> {
               OutlinedButton.icon(
                 onPressed: () => _openEdit(entry),
                 icon: const Icon(Icons.edit_outlined),
-                label: const Text('Edit this entry'),
+                label: Text(l10n.editThisEntry),
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(50),
                   shape: RoundedRectangleBorder(

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:material_ui/material_ui.dart';
 
 import '../../util/date_formatter.dart';
@@ -9,13 +11,17 @@ class JournalCard extends StatelessWidget {
     required this.title,
     required this.notes,
     required this.date,
+    required this.localeName,
     required this.onTap,
+    this.imageBase64,
   });
 
   final String title;
   final String notes;
   final DateTime date;
+  final String localeName;
   final VoidCallback onTap;
+  final String? imageBase64;
 
   @override
   Widget build(BuildContext context) {
@@ -32,47 +38,67 @@ class JournalCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(18),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
+            padding: const EdgeInsets.all(14),
+            child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        title,
-                        maxLines: 1,
+                if (imageBase64 != null && imageBase64!.isNotEmpty) ...<Widget>[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.memory(
+                      base64Decode(imageBase64!),
+                      width: 64,
+                      height: 64,
+                      fit: BoxFit.cover,
+                      gaplessPlayback: true,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Text(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xFF14223B),
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.chevron_right_rounded,
+                            color: Color(0xFF9AA7BF),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        notes,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Color(0xFF14223B),
+                          fontSize: 13,
+                          height: 1.4,
+                          color: Color(0xFF7A88A3),
                         ),
                       ),
-                    ),
-                    const Icon(
-                      Icons.chevron_right_rounded,
-                      color: Color(0xFF9AA7BF),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  notes,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    height: 1.4,
-                    color: Color(0xFF7A88A3),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  formatDateTime(date),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFFA9B4C8),
+                      const SizedBox(height: 10),
+                      Text(
+                        formatDateTime(date, localeName),
+                        style: const TextStyle(
+                          fontSize: 11,
+                          color: Color(0xFFA9B4C8),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

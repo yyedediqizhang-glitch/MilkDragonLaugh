@@ -1,0 +1,83 @@
+{
+  "@@locale": "en",
+  "appTitle": "EDU SNAP",
+  "journalTitle": "Journal",
+  "newEntry": "New entry",
+  "emptyTitle": "Your journal is empty",
+  "emptyHint": "Tap \"New entry\" to write your first one.",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "edit": "Edit",
+  "titleLabel": "Title",
+  "titleHint": "e.g. What I learned today",
+  "titleRequired": "Title is required",
+  "titleEmptyMessage": "Please enter a title before saving.",
+  "notesLabel": "Notes",
+  "notesHint": "Write anything you want to remember...",
+  "addEntry": "Add entry",
+  "saveChanges": "Save changes",
+  "editEntry": "Edit entry",
+  "entryLabel": "Entry",
+  "deleteEntryTitle": "Delete entry?",
+  "deleteEntryBody": "\"{title}\" will be removed from your journal.",
+  "@deleteEntryBody": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "createdOn": "Created {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "updatedOn": "Updated {date}",
+  "@updatedOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "noNotes": "No notes yet.",
+  "editThisEntry": "Edit this entry",
+  "addPhoto": "Add a photo",
+  "takePhoto": "Take a photo",
+  "chooseFromGallery": "Choose from gallery",
+  "removePhoto": "Remove photo",
+  "permissionTitle": "Permission needed",
+  "permissionCameraBody": "EDU SNAP needs access to your camera to take a photo. Please allow it in the system settings.",
+  "permissionGalleryBody": "EDU SNAP needs access to your photos to choose a picture. Please allow it in the system settings.",
+  "openSettings": "Open settings",
+  "pickFailed": "Could not pick an image. Please try again.",
+  "language": "Language",
+  "languageEnglish": "English",
+  "languageChinese": "Chinese",
+  "languageJapanese": "Japanese",
+  "storageTitle": "Storage used",
+  "storageUsed": "{size} used",
+  "@storageUsed": {
+    "placeholders": {
+      "size": { "type": "String" }
+    }
+  },
+  "clearData": "Clear all data",
+  "clearDataTitle": "Clear all data?",
+  "clearDataBody": "This deletes every entry and photo stored by this app.",
+  "clearAction": "Clear",
+  "confirmClearTitle": "Are you sure?",
+  "confirmClearBody": "This cannot be undone.",
+  "dataCleared": "All data has been cleared.",
+  "about": "About",
+  "aboutBody": "A journal app built with Flutter and the MVC structure from the workshop.",
+  "version": "Version {version}",
+  "@version": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "settingsTitle": "Settings",
+  "dataSection": "DATA",
+  "languageSection": "LANGUAGE",
+  "aboutSection": "ABOUT",
+  "photoSection": "PHOTO"
+}

@@ -1,0 +1,83 @@
+{
+  "@@locale": "zh",
+  "appTitle": "EDU SNAP",
+  "journalTitle": "我的日記",
+  "newEntry": "新增日記",
+  "emptyTitle": "日記還是空的",
+  "emptyHint": "按「新增日記」寫下第一篇吧。",
+  "save": "儲存",
+  "cancel": "取消",
+  "delete": "刪除",
+  "edit": "編輯",
+  "titleLabel": "標題",
+  "titleHint": "例如：今天學到的事",
+  "titleRequired": "請輸入標題",
+  "titleEmptyMessage": "儲存前請先輸入標題。",
+  "notesLabel": "內容",
+  "notesHint": "寫下任何想記住的事……",
+  "addEntry": "新增",
+  "saveChanges": "儲存變更",
+  "editEntry": "編輯日記",
+  "entryLabel": "日記",
+  "deleteEntryTitle": "刪除這篇日記？",
+  "deleteEntryBody": "「{title}」將會從你的日記中移除。",
+  "@deleteEntryBody": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "createdOn": "建立於 {date}",
+  "@createdOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "updatedOn": "更新於 {date}",
+  "@updatedOn": {
+    "placeholders": {
+      "date": { "type": "String" }
+    }
+  },
+  "noNotes": "還沒有內容。",
+  "editThisEntry": "編輯這篇日記",
+  "addPhoto": "加入照片",
+  "takePhoto": "拍照",
+  "chooseFromGallery": "從相簿選擇",
+  "removePhoto": "移除照片",
+  "permissionTitle": "需要權限",
+  "permissionCameraBody": "EDU SNAP 需要相機權限才能拍照，請到系統設定中開啟。",
+  "permissionGalleryBody": "EDU SNAP 需要相簿權限才能選擇照片，請到系統設定中開啟。",
+  "openSettings": "開啟設定",
+  "pickFailed": "無法選擇圖片，請再試一次。",
+  "language": "語言",
+  "languageEnglish": "英文",
+  "languageChinese": "中文",
+  "languageJapanese": "日文",
+  "storageTitle": "已用空間",
+  "storageUsed": "已用 {size}",
+  "@storageUsed": {
+    "placeholders": {
+      "size": { "type": "String" }
+    }
+  },
+  "clearData": "清除所有資料",
+  "clearDataTitle": "清除所有資料？",
+  "clearDataBody": "這會刪除 App 內所有日記與照片。",
+  "clearAction": "清除",
+  "confirmClearTitle": "確定要清除？",
+  "confirmClearBody": "此動作無法復原。",
+  "dataCleared": "所有資料已清除。",
+  "about": "關於",
+  "aboutBody": "以 Flutter 及工作坊的 MVC 架構製作的日記 App。",
+  "version": "版本 {version}",
+  "@version": {
+    "placeholders": {
+      "version": { "type": "String" }
+    }
+  },
+  "settingsTitle": "設定",
+  "dataSection": "資料",
+  "languageSection": "語言",
+  "aboutSection": "關於",
+  "photoSection": "照片"
+}
