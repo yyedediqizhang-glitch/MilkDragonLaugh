@@ -1,12 +1,13 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../components/snap_card.dart';
-import '../../models/snap_item.dart';
-import '../../util/date_formatter.dart';
+import '../../components/journal_card.dart';
+import '../../models/journal_entry.dart';
+import '../add_page/add_page_view.dart';
+import '../detail_page/detail_page_view.dart';
+import '../setting_page/setting_page_view.dart';
 import 'home_page_controller.dart';
 
-/// Home page: a simple, working list of snaps that shows the MVC flow
-/// view -> controller -> model.
+/// Home page: the list of journal entries.
 class HomePageView extends StatefulWidget {
   const HomePageView({super.key});
 
@@ -18,65 +19,57 @@ class _HomePageViewState extends State<HomePageView> {
   final HomePageController _controller = HomePageController();
 
   @override
+  void initState() {
+    super.initState();
+    _controller.init();
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     super.dispose();
   }
 
-  Future<void> _showAddDialog() async {
-    final TextEditingController textController = TextEditingController();
+  Future<void> _openDetail(String id) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => DetailPageView(entryId: id)),
+    );
+  }
 
-    final String? title = await showDialog<String>(
+  Future<void> _openAdd() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const AddPageView()),
+    );
+  }
+
+  Future<void> _openSettings() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute<void>(builder: (_) => const SettingPageView()),
+    );
+  }
+
+  Future<bool> _confirmDelete(JournalEntry entry) async {
+    final bool? confirmed = await showDialog<bool>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('New snap'),
-          content: TextField(
-            controller: textController,
-            autofocus: true,
-            textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(
-              hintText: 'e.g. Finish the Session 1 challenge',
-            ),
-            onSubmitted: (String value) =>
-                Navigator.of(dialogContext).pop(value),
-          ),
+          title: const Text('Delete entry?'),
+          content: Text('"${entry.title}" will be removed from your journal.'),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
+              onPressed: () => Navigator.of(dialogContext).pop(false),
               child: const Text('Cancel'),
             ),
             FilledButton(
-              onPressed: () =>
-                  Navigator.of(dialogContext).pop(textController.text),
-              child: const Text('Add'),
+              onPressed: () => Navigator.of(dialogContext).pop(true),
+              child: const Text('Delete'),
             ),
           ],
         );
       },
     );
 
-    textController.dispose();
-
-    if (!mounted || title == null) {
-      return;
-    }
-
-    _controller.add(title);
-  }
-
-  void _showAbout() {
-    showAboutDialog(
-      context: context,
-      applicationName: 'EDU SNAP',
-      applicationVersion: '1.0.0',
-      children: const <Widget>[
-        Text(
-          'A Flutter workshop demo built with the MVC structure: '
-          'models, components, pages and util.',
-        ),
-      ],
-    );
+    return confirmed ?? false;
   }
 
   @override
@@ -86,114 +79,99 @@ class _HomePageViewState extends State<HomePageView> {
         title: const Text('EDU SNAP'),
         actions: <Widget>[
           IconButton(
-            tooltip: 'About',
-            onPressed: _showAbout,
-            icon: const Icon(Icons.info_outline_rounded),
+            tooltip: 'Settings',
+            onPressed: _openSettings,
+            icon: const Icon(Icons.settings_outlined),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: _showAddDialog,
+        onPressed: _openAdd,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Add snap'),
+        label: const Text('New entry'),
       ),
       body: ListenableBuilder(
         listenable: _controller,
         builder: (BuildContext context, Widget? child) {
-          final List<SnapItem> items = _controller.items;
+          if (_controller.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
 
-          return ListView(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 96),
-            children: <Widget>[
-              const Text(
-                'Hi, Ricardo',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF14223B),
+          final List<JournalEntry> entries = _controller.entries;
+
+          if (entries.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    const Icon(
+                      Icons.menu_book_outlined,
+                      size: 56,
+                      color: Color(0xFF9AA7BF),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Your journal is empty',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xFF14223B),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Tap "New entry" to write your first one.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Color(0xFF7A88A3)),
+                    ),
+                    const SizedBox(height: 20),
+                    FilledButton.icon(
+                      onPressed: _openAdd,
+                      icon: const Icon(Icons.add_rounded),
+                      label: const Text('New entry'),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 6),
-              Text(
-                formatDateTime(DateTime.now()),
-                style: const TextStyle(fontSize: 13, color: Color(0xFF7A88A3)),
-              ),
-              const SizedBox(height: 18),
-              Row(
-                children: <Widget>[
-                  _StatChip(
-                    label: '${_controller.totalCount} snaps',
-                    icon: Icons.auto_awesome_rounded,
-                  ),
-                  const SizedBox(width: 10),
-                  _StatChip(
-                    label: '${_controller.doneCount} done',
-                    icon: Icons.check_circle_outline_rounded,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 22),
-              if (items.isEmpty)
-                Container(
-                  padding: const EdgeInsets.all(24),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 96),
+            itemCount: entries.length,
+            itemBuilder: (BuildContext context, int index) {
+              final JournalEntry entry = entries[index];
+
+              return Dismissible(
+                key: ValueKey<String>(entry.id),
+                direction: DismissDirection.endToStart,
+                confirmDismiss: (_) => _confirmDelete(entry),
+                onDismissed: (_) => _controller.remove(entry.id),
+                background: Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(right: 24),
+                  alignment: Alignment.centerRight,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color(0xFFE5484D),
                     borderRadius: BorderRadius.circular(18),
-                    border: Border.all(color: const Color(0xFFE3E9F4)),
                   ),
-                  child: const Text(
-                    'No snaps yet. Tap "Add snap" to create your first one.',
-                    style: TextStyle(color: Color(0xFF7A88A3)),
-                  ),
-                )
-              else
-                ...items.map(
-                  (SnapItem item) => SnapCard(
-                    title: item.title,
-                    subtitle:
-                        '${item.note} · ${formatTime(item.createdAt)}',
-                    isDone: item.isDone,
-                    onToggle: () => _controller.toggle(item.id),
-                    onDelete: () => _controller.remove(item.id),
+                  child: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.white,
                   ),
                 ),
-            ],
+                child: JournalCard(
+                  title: entry.title,
+                  notes: entry.notes,
+                  date: entry.updatedAt,
+                  onTap: () => _openDetail(entry.id),
+                ),
+              );
+            },
           );
         },
-      ),
-    );
-  }
-}
-
-class _StatChip extends StatelessWidget {
-  const _StatChip({required this.label, required this.icon});
-
-  final String label;
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(999),
-        border: Border.all(color: const Color(0xFFE3E9F4)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(icon, size: 16, color: const Color(0xFF2F6FED)),
-          const SizedBox(width: 6),
-          Text(
-            label,
-            style: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF14223B),
-            ),
-          ),
-        ],
       ),
     );
   }
