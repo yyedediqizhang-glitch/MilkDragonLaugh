@@ -58,6 +58,42 @@ lib/
 * **View** – what the user sees (`*_view.dart`)
 * **Controller** – page state and logic (`*_controller.dart`, a `ChangeNotifier`)
 
+## Review guide (what to check)
+
+**Pages** — every page keeps its view and controller in the same folder:
+
+| Page | View | Controller |
+|---|---|---|
+| Home (list, two-pane host) | `lib/pages/home_page/home_page_view.dart` | `lib/pages/home_page/home_page_controller.dart` |
+| Detail | `lib/pages/detail_page/detail_page_view.dart` | `lib/pages/detail_page/detail_page_controller.dart` |
+| Add / Edit | `lib/pages/add_page/add_page_view.dart` | `lib/pages/add_page/add_page_controller.dart` |
+| Settings | `lib/pages/setting_page/setting_page_view.dart` | `lib/pages/setting_page/setting_page_controller.dart` |
+
+**Functions** — where each one lives:
+
+| Function | Where |
+|---|---|
+| Create entry (title, notes, photo) | `add_page_view.dart` → `JournalRepository.add` |
+| Read list + detail | `home_page_view.dart`, `detail_page_view.dart` |
+| Update entry (challenge) | same add page with `entry != null` → `JournalRepository.update` |
+| Delete (swipe, with confirm) | `home_page_view.dart` `Dismissible` |
+| Delete from detail | `detail_page_view.dart` |
+| Sort by title (on load + after save) | `journal_repository.dart` `sortByTitleDescending` |
+| Required-field validation | `add_page_controller.dart` + inline error & snack bar |
+| Camera / gallery with permissions | `util/photo_service.dart` |
+| Photo shown in list and detail | `components/journal_card.dart`, `detail_page_view.dart` |
+| Persistence (entries + photo + language) | `util/local_storage.dart` |
+| Three languages, localized dates & size | `lib/l10n/*.arb`, `util/date_formatter.dart` |
+| Storage used + clear with double confirm | `setting_page_view.dart` |
+| Version + build number | `setting_page_controller.dart` (`package_info_plus`) |
+| App icon | `assets/icon.png` + `flutter_launcher_icons` |
+| Theme (no hard-coded colours in pages) | `util/app_theme.dart` (`AppPalette`) |
+| Native Duo rail back + fold two-pane | `util/duo_layout_service.dart` |
+
+**Tests** — `flutter test` runs 15 cases covering list, detail, create, edit,
+delete, sort, empty state, photo rendering, size accounting, persistence,
+clear-all, i18n and the two-pane rule.
+
 ## Session 2 — pages & lifecycle
 
 * Load + first sort in the home page `initState`, listeners removed in `dispose`.

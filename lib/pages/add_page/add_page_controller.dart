@@ -14,13 +14,15 @@ class AddPageController extends ChangeNotifier {
 
   final JournalEntry? entry;
 
-  String? _titleError;
   String? _imageBase64;
   bool _isPicking = false;
+  bool _titleMissing = false;
 
   bool get isEditing => entry != null;
 
-  String? get titleError => _titleError;
+  /// True when the last validation found an empty title (the view picks the
+  /// localized message, the controller stays free of UI strings).
+  bool get titleMissing => _titleMissing;
 
   String? get imageBase64 => _imageBase64;
 
@@ -30,15 +32,9 @@ class AddPageController extends ChangeNotifier {
 
   /// Required-field validation, triggered by the Save button.
   bool validate({required String title}) {
-    if (title.trim().isEmpty) {
-      _titleError = 'Title is required';
-      notifyListeners();
-      return false;
-    }
-
-    _titleError = null;
+    _titleMissing = title.trim().isEmpty;
     notifyListeners();
-    return true;
+    return !_titleMissing;
   }
 
   /// Asks the service for camera / gallery permission, then picks an image.

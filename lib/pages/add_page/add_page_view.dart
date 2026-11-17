@@ -213,6 +213,7 @@ class _AddPageViewState extends State<AddPageView> {
         actions: <Widget>[
           TextButton(
             onPressed: _save,
+            style: TextButton.styleFrom(foregroundColor: Colors.white),
             child: Text(
               l10n.save,
               style: const TextStyle(fontWeight: FontWeight.w700),
@@ -234,9 +235,9 @@ class _AddPageViewState extends State<AddPageView> {
                 decoration: InputDecoration(
                   labelText: '${l10n.titleLabel} *',
                   hintText: l10n.titleHint,
-                  errorText: _controller.titleError == null
-                      ? null
-                      : l10n.titleRequired,
+                  errorText: _controller.titleMissing
+                      ? l10n.titleRequired
+                      : null,
                   counterText: '',
                 ),
               );
